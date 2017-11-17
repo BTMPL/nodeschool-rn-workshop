@@ -86,7 +86,7 @@ class ChatScreen extends React.Component {
     }
 
     componentDidMount() {
-      this.socket = io('http://192.168.1.27:8080', {jsonp: false});
+      this.socket = io('http://147.135.192.225:8080', {jsonp: false});
   
       this.socket.on('connect', () => {                                                                            
         console.log('connected');
