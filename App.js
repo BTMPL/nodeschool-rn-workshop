@@ -4,7 +4,8 @@ import {
   Text, 
   View,
   TextInput,
-  TouchableOpacity 
+  TouchableOpacity,
+  FlatList
 } from 'react-native';
 
 const Styles = StyleSheet.create({
@@ -21,6 +22,46 @@ const Styles = StyleSheet.create({
     borderRadius: 5
   }
 });
+
+const Message = ({item}) => {
+  return (
+    <View style={{marginBottom: 10}}>
+      <Text>{item.author}</Text>
+      <Text>{item.text}</Text>
+    </View>
+  )
+}
+
+const items = [
+  {
+    id: 1,
+    author: 'BTM',
+    text: 'Witaj na Node School!'
+  },
+  {
+    id: 2,
+    author: 'BTM',
+    text: 'Ooops, ucieło nam wiadomość ;)'
+  }  
+];
+
+class ChatScreen extends React.Component {
+  
+    keyExtractor = (item) => item.id;
+  
+    constructor(props) {
+      super(props);
+    }
+
+    render() {
+      return (
+        <View style={{backgroundColor: '#e6e2df', flex: 1}}>
+          <Message item={items[0]} />          
+          <Message item={items[1]} />          
+        </View>
+      );
+    }
+  }
 
 
 class HomeScreen extends React.Component {
@@ -68,4 +109,4 @@ class HomeScreen extends React.Component {
   }
 }
 
-export default HomeScreen;
+export default ChatScreen;
