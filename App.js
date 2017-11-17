@@ -5,7 +5,8 @@ import {
   View,
   TextInput,
   TouchableOpacity,
-  FlatList
+  FlatList,
+  KeyboardAvoidingView
 } from 'react-native';
 
 const Styles = StyleSheet.create({
@@ -85,15 +86,17 @@ class ChatScreen extends React.Component {
             renderItem={Message}
             keyExtractor={this.keyExtractor}
           />   
-          <View style={{backgroundColor: 'white', padding: 5, margin: 10}}>
-            <TextInput 
-              value={this.state.text}
-              underlineColorAndroid={'transparent'} 
-              autoGrow={true}
-              multiline={true}
-              onSubmitEditing={this.handleSubmit}
-              onChangeText={this.handleTextChange} />
-          </View>                 
+          <KeyboardAvoidingView behavior={'padding'} style={{backgroundColor: '#f5f1ee'}}>
+            <View style={{backgroundColor: 'white', padding: 5, margin: 10}}>
+              <TextInput 
+                value={this.state.text}
+                underlineColorAndroid={'transparent'} 
+                autoGrow={true}
+                multiline={true}
+                onSubmitEditing={this.handleSubmit}
+                onChangeText={this.handleTextChange} />
+            </View>  
+          </KeyboardAvoidingView>               
         </View>
       );
     }
