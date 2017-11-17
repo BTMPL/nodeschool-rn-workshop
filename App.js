@@ -6,8 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,  
 } from 'react-native';
+
+import { StackNavigator } from 'react-navigation';
 
 import throttle from "lodash.throttle";
 import uuid from "uuid/v4";
@@ -75,7 +77,7 @@ class ChatScreen extends React.Component {
       super(props);
   
       this.state = {
-        userName: 'Developer',
+        userName: this.props.navigation.state.params.user,
         userId: uuid(),
         text: '',
         typing: false,
@@ -203,7 +205,7 @@ class HomeScreen extends React.Component {
 
   handleSubmit = () => {
     if(this.state.name.length >= 3) {
-      alert(`Witaj ${this.state.name}`);
+      this.props.navigation.navigate('Chat', { user: this.state.name })
     }
   }
 
@@ -234,4 +236,19 @@ class HomeScreen extends React.Component {
   }
 }
 
-export default ChatScreen;
+const RootNavigator = StackNavigator({
+  Home: {
+    screen: HomeScreen,
+    navigationOptions: () => ({
+      header: null
+    })
+  },
+  Chat: {
+    screen: ChatScreen,
+    navigationOptions: () => ({
+      header: null
+    })    
+  }
+});
+
+export default RootNavigator;
