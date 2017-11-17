@@ -9,6 +9,13 @@ import {
 } from 'react-native';
 
 const Styles = StyleSheet.create({
+  Message: {
+    padding: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 5,
+    marginBottom: 10,
+    maxWidth: '95%'
+  },  
   Login: {
     flex: 1, 
     flexDirection: 'row', 
@@ -25,8 +32,8 @@ const Styles = StyleSheet.create({
 
 const Message = ({item}) => {
   return (
-    <View style={{marginBottom: 10}}>
-      <Text>{item.author}</Text>
+    <View style={Styles.Message}>
+      <Text style={{fontWeight: 'bold', color: '#8cdba4'}}>{item.author}</Text>
       <Text>{item.text}</Text>
     </View>
   )
@@ -56,8 +63,13 @@ class ChatScreen extends React.Component {
     render() {
       return (
         <View style={{backgroundColor: '#e6e2df', flex: 1}}>
-          <Message item={items[0]} />          
-          <Message item={items[1]} />          
+          <FlatList
+            ref={this.setRef}
+            style={{padding: 10, flex: 1}}          
+            data={items}
+            renderItem={Message}
+            keyExtractor={this.keyExtractor}
+          />          
         </View>
       );
     }
