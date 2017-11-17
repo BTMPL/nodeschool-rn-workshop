@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 
+import throttle from "lodash.throttle";
 import uuid from "uuid/v4";
 
 import io from "socket.io-client";
@@ -31,6 +32,13 @@ const Styles = StyleSheet.create({
     justifyContent: 'center', 
     backgroundColor: '#317eac'
   },
+  Typing: {
+    padding: 10, 
+    marginBottom: 10, 
+    justifyContent: 'center', 
+    flex: 1, 
+    flexDirection: 'row'
+  },  
   btnLogin: {
     backgroundColor: 'black',
     padding: 5,
@@ -38,26 +46,39 @@ const Styles = StyleSheet.create({
   }
 });
 
-const Message = ({item}) => {
+const Message = ({item, self}) => {
+  const margin = self ? '5%' : 0;
   return (
-    <View style={Styles.Message}>
+    <View style={[Styles.Message, {marginLeft: margin}]}>
       <Text style={{fontWeight: 'bold', color: '#8cdba4'}}>{item.author}</Text>
       <Text>{item.text}</Text>
     </View>
   )
 }
 
+class Typing extends React.Component {
+  render() {
+    return (
+      <View style={Styles.Typing}>
+        <Text>Ktoś właśnie pisze ...</Text>
+      </View>
+    )
+  }
+}
+
 class ChatScreen extends React.Component {
   
     keyExtractor = (item) => item.id;
+    typingTimeout = 0;
   
     constructor(props) {
       super(props);
   
       this.state = {
         userName: 'Developer',
-        user: uuid(),
+        userId: uuid(),
         text: '',
+        typing: false,
         items: []      
       }         
     }
@@ -78,6 +99,19 @@ class ChatScreen extends React.Component {
           typing: false
         }, () => this.list.scrollToEnd());
       });
+
+      this.socket.on('typing', () => {
+        this.setState({
+          typing: true
+        });
+  
+        clearTimeout(this.typingTimeout);
+        this.typingTimeout = setTimeout(() => {
+          this.setState({
+            typing: false
+          })
+        }, 5000)
+      })      
     }    
 
     componentWillUnmount() {
@@ -87,8 +121,15 @@ class ChatScreen extends React.Component {
     handleTextChange = (text) => {
       this.setState({
         text
+      }, () => {
+        this.handleTyping();
       });
     }  
+
+    handleTyping = throttle(() => {
+      console.log('send typing');
+      this.socket.emit('typing'); 
+    }, 3000, { trailing: false });    
   
     handleSubmit = () => {
       if(this.state.text) {
@@ -104,7 +145,21 @@ class ChatScreen extends React.Component {
           text: ''
         });
       }
+    } 
+
+    getItems = () => {
+      const items = [
+        ...this.state.items,       
+      ];
+      if(this.state.typing) items.push({ type: 'special', 'id': 'typing'});
+  
+      return items;
     }    
+    
+    renderItem = ({item}) => {
+      if(typeof item.type === 'undefined') return <Message item={item} self={item.user === this.state.userId} />;
+      else return <Typing />
+    }   
 
     setRef = (el) => this.list = el;
     render() {
@@ -113,8 +168,8 @@ class ChatScreen extends React.Component {
           <FlatList
             ref={this.setRef}
             style={{padding: 10, flex: 1}}          
-            data={this.state.items}
-            renderItem={Message}
+            data={this.getItems()}
+            renderItem={this.renderItem}
             keyExtractor={this.keyExtractor}
           />   
           <KeyboardAvoidingView behavior={'padding'} style={{backgroundColor: '#f5f1ee'}}>
