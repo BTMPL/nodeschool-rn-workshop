@@ -64,7 +64,6 @@ class ChatScreen extends React.Component {
       return (
         <View style={{backgroundColor: '#e6e2df', flex: 1}}>
           <FlatList
-            ref={this.setRef}
             style={{padding: 10, flex: 1}}          
             data={items}
             renderItem={Message}
