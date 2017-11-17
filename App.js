@@ -9,6 +9,13 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 
+import uuid from "uuid/v4";
+
+import io from "socket.io-client";
+console.ignoredYellowBox = [
+  'Setting a timer'
+];
+
 const Styles = StyleSheet.create({
   Message: {
     padding: 10,
@@ -40,19 +47,6 @@ const Message = ({item}) => {
   )
 }
 
-const items = [
-  {
-    id: 1,
-    author: 'BTM',
-    text: 'Witaj na Node School!'
-  },
-  {
-    id: 2,
-    author: 'BTM',
-    text: 'Ooops, ucieło nam wiadomość ;)'
-  }  
-];
-
 class ChatScreen extends React.Component {
   
     keyExtractor = (item) => item.id;
@@ -61,8 +55,33 @@ class ChatScreen extends React.Component {
       super(props);
   
       this.state = {
-        text: ''  
-      }          
+        userName: 'Developer',
+        user: uuid(),
+        text: '',
+        items: []      
+      }         
+    }
+
+    componentDidMount() {
+      this.socket = io('http://192.168.1.27:8080', {jsonp: false});
+  
+      this.socket.on('connect', () => {                                                                            
+        console.log('connected');
+      });
+  
+      this.socket.on('echo', (data) => {
+        this.setState({
+          items: [
+            ...this.state.items,
+            data
+          ],
+          typing: false
+        }, () => this.list.scrollToEnd());
+      });
+    }    
+
+    componentWillUnmount() {
+      this.socket.close();
     }
 
     handleTextChange = (text) => {
@@ -73,16 +92,28 @@ class ChatScreen extends React.Component {
   
     handleSubmit = () => {
       if(this.state.text) {
-        alert(this.state.text);
+        const payload = {
+          author: this.state.userName,
+          user: this.state.userId,
+          text: this.state.text
+        };
+  
+        this.socket.emit('msg', payload);
+  
+        this.setState({
+          text: ''
+        });
       }
     }    
 
+    setRef = (el) => this.list = el;
     render() {
       return (
         <View style={{backgroundColor: '#e6e2df', flex: 1}}>
           <FlatList
+            ref={this.setRef}
             style={{padding: 10, flex: 1}}          
-            data={items}
+            data={this.state.items}
             renderItem={Message}
             keyExtractor={this.keyExtractor}
           />   
