@@ -58,18 +58,42 @@ class ChatScreen extends React.Component {
   
     constructor(props) {
       super(props);
+  
+      this.state = {
+        text: ''  
+      }          
     }
+
+    handleTextChange = (text) => {
+      this.setState({
+        text
+      });
+    }  
+  
+    handleSubmit = () => {
+      if(this.state.text) {
+        alert(this.state.text);
+      }
+    }    
 
     render() {
       return (
         <View style={{backgroundColor: '#e6e2df', flex: 1}}>
           <FlatList
-            ref={this.setRef}
             style={{padding: 10, flex: 1}}          
             data={items}
             renderItem={Message}
             keyExtractor={this.keyExtractor}
-          />          
+          />   
+          <View style={{backgroundColor: 'white', padding: 5, margin: 10}}>
+            <TextInput 
+              value={this.state.text}
+              underlineColorAndroid={'transparent'} 
+              autoGrow={true}
+              multiline={true}
+              onSubmitEditing={this.handleSubmit}
+              onChangeText={this.handleTextChange} />
+          </View>                 
         </View>
       );
     }
