@@ -56,7 +56,7 @@ class ChatScreen extends React.Component {
   
       this.state = {
         userName: 'Developer',
-        user: uuid(),
+        userId: uuid(),
         text: '',
         items: []      
       }         
