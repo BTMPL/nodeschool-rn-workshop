@@ -91,8 +91,7 @@ class ChatScreen extends React.Component {
               <TextInput 
                 value={this.state.text}
                 underlineColorAndroid={'transparent'} 
-                autoGrow={true}
-                multiline={true}
+                autoCorrect={false}
                 onSubmitEditing={this.handleSubmit}
                 onChangeText={this.handleTextChange} />
             </View>  
@@ -131,6 +130,7 @@ class HomeScreen extends React.Component {
           </View>
           <View style={{width: 150, marginLeft: 10}}>
             <TextInput 
+              autoCorrect={false}
               value={this.state.name} 
               underlineColorAndroid={'white'} 
               style={{color: 'white'}} 
